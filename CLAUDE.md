@@ -103,7 +103,10 @@ Filenames must be valid HTTP status codes (100-599). Arrays must be non-empty. S
 
 ## CI/CD
 
-No CI/CD pipelines configured yet. When added, `npm run validate` should be a required check on PRs.
+- **GitHub Actions**: `.github/workflows/ci.yml` runs on pushes to `main` and all PRs.
+  - Matrix: Node.js 18, 20, 22.
+  - Steps: `npm ci` → `npm run validate` → `npm test`.
+- **Dependabot**: `.github/dependabot.yml` checks npm and GitHub Actions dependencies weekly.
 
 ## Security Considerations
 

@@ -4,85 +4,106 @@
 
 **mock-server** — "Like Mockoon, but worse."
 
-A mock API server project inspired by [Mockoon](https://mockoon.com/). The project is in its early inception stage and does not yet contain source code, build configuration, or dependencies.
+A server that mocks **you**. It returns real HTTP status codes with sarcastic, judgmental messages. Community members contribute funny responses via PRs to `responses.json`.
 
 - **License**: MIT (Copyright 2026 Shooks)
 - **Repository owner**: Dansyuqri
+- **Tech stack**: Node.js, Express.js
+- **Data format**: Flat JSON file (`responses.json`)
 
 ## Repository Structure
 
 ```
 mock-server/
-├── CLAUDE.md       # This file — guidance for AI assistants
-├── LICENSE         # MIT License
-└── README.md       # Project description
+├── index.js            # Express server — entry point, all routes
+├── responses.json      # Sarcastic messages keyed by HTTP status code
+├── validate.js         # Validates responses.json structure and rules
+├── package.json        # Dependencies: express, cors, express-rate-limit
+├── Dockerfile          # Production container (Node 22 Alpine)
+├── .gitignore          # node_modules, .env, logs
+├── CONTRIBUTING.md     # Contribution guidelines and content rules
+├── CLAUDE.md           # This file
+├── LICENSE             # MIT License
+└── README.md           # Project docs and usage
 ```
-
-No source code, configuration files, or dependencies exist yet. This is a greenfield project.
 
 ## Development Setup
 
-No setup steps are required yet. When the project gains a `package.json` or equivalent, update this section with:
-
-- Runtime and version requirements (e.g., Node.js >= 20)
-- Install command (e.g., `npm install`)
-- Dev server command
-- Build command
+```bash
+npm install
+npm start           # Starts server on port 3000 (or PORT env var)
+```
 
 ## Common Commands
 
-_None defined yet._ Update this section as scripts are added to the project.
-
-<!-- Example format for future use:
 | Command | Description |
 |---------|-------------|
 | `npm install` | Install dependencies |
-| `npm run dev` | Start development server |
-| `npm run build` | Production build |
-| `npm test` | Run tests |
-| `npm run lint` | Lint source files |
--->
+| `npm start` | Start the server (`node index.js`) |
+| `npm run validate` | Validate `responses.json` format and rules |
 
 ## Architecture
 
-Not yet established. When implemented, document:
+- **Single-file server** (`index.js`, ~50 lines): Express app with two routes.
+  - `GET /` — returns project info and available status codes.
+  - `GET /:statusCode` — returns the matching HTTP status code with a random sarcastic message from `responses.json`.
+- **Data loading**: `responses.json` is read once at startup into memory. No database.
+- **Rate limiting**: 120 req/min per IP via `express-rate-limit`. Uses `cf-connecting-ip` header when behind Cloudflare.
+- **CORS**: Enabled for all origins (public API).
 
-- Tech stack choices (language, framework, HTTP library)
-- Entry point(s)
-- Directory layout conventions (e.g., `src/`, `tests/`)
-- Key abstractions and data flow
+### Response Format
+
+```json
+{
+  "status": 404,
+  "message": "Whatever you're looking for, it's not here. Just like my will to help you."
+}
+```
+
+The response HTTP status code matches the requested code.
+
+### Data Format (`responses.json`)
+
+```json
+{
+  "200": ["message1", "message2"],
+  "404": ["message1", "message2"]
+}
+```
+
+Keys are HTTP status code strings (100-599). Values are non-empty arrays of strings (max 200 chars each).
 
 ## Code Conventions
 
-No conventions established yet. When code is added, document:
-
-- Language and style (TypeScript strict mode, ESLint config, Prettier, etc.)
-- Naming conventions (files, variables, types)
-- Import ordering
-- Error handling patterns
-- Commit message format
+- **Language**: Plain JavaScript (Node.js, CommonJS `require`)
+- **No build step**: Code runs directly with `node`
+- **Simplicity first**: The entire server is intentionally one file. Don't split into routes/controllers/middleware unless there's a strong reason.
+- **No TypeScript, no linter configured** (yet)
 
 ## Testing
 
-No test infrastructure yet. When tests are added, document:
-
-- Test framework (e.g., Vitest, Jest)
-- How to run tests (`npm test`)
-- Test file naming and location conventions
-- Coverage requirements
+- **Validation only**: `npm run validate` checks `responses.json` for structural correctness (valid codes, non-empty strings, no duplicates, max length).
+- No unit test framework is configured yet.
 
 ## CI/CD
 
-No CI/CD pipelines configured. When added, document:
+No CI/CD pipelines configured yet. When added, `npm run validate` should be a required check on PRs.
 
-- Pipeline tool (GitHub Actions, etc.)
-- Required checks before merge
-- Deployment process
+## Security Considerations
+
+This project accepts community contributions to `responses.json`. Key concerns:
+
+- **Content moderation**: All PRs must be reviewed by maintainers. CONTRIBUTING.md bans hate speech, personal info, URLs, HTML, and executable content.
+- **Validation**: `npm run validate` enforces structural rules (valid JSON, valid status codes, string-only values, 200-char max, no duplicates).
+- **No user input processing at runtime**: The server reads no query params, no request body — it only serves random strings from a static array. This eliminates injection risks.
+- **Rate limiting**: Prevents abuse of the live endpoint.
+- **Plain text only**: Responses are served as JSON string values, not rendered as HTML.
 
 ## Guidelines for AI Assistants
 
 - **Read before writing**: Always read existing files before proposing changes.
-- **Keep it simple**: This project values simplicity — avoid over-engineering.
-- **Update this file**: When you add infrastructure, dependencies, scripts, or conventions to this project, update the relevant sections of this CLAUDE.md to keep it current.
-- **Small commits**: Prefer focused, single-purpose commits with clear messages.
-- **Respect the license**: This is an MIT-licensed project.
+- **Keep it simple**: This project values extreme simplicity. The whole server is ~50 lines. Don't add abstractions, frameworks, or patterns that aren't needed.
+- **responses.json is community-contributed**: Treat it as data, not code. Changes to its structure affect all contributors.
+- **Run validate**: After any change to `responses.json`, run `npm run validate`.
+- **Update this file**: When adding infrastructure or conventions, update CLAUDE.md.
+- **Small commits**: Prefer focused, single-purpose commits.

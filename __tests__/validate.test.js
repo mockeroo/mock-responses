@@ -219,6 +219,36 @@ describe('validateResponses', () => {
       expect(result.errors.length).toBe(0);
       fs.rmSync(dir, { recursive: true });
     });
+
+    it('rejects strings containing profanity', () => {
+      const dir = createTempDir();
+      writeFile(dir, '200.json', JSON.stringify(["fuck you"]));
+      const result = validateResponses(dir);
+      expect(result.errors.length).toBe(1);
+      expect(result.errors[0]).toMatch(/profanity/);
+      fs.rmSync(dir, { recursive: true });
+    });
+
+    it('rejects profanity disguised with leet speak', () => {
+      const dir = createTempDir();
+      writeFile(dir, '200.json', JSON.stringify(["f*ck this"]));
+      const result = validateResponses(dir);
+      expect(result.errors.length).toBe(1);
+      expect(result.errors[0]).toMatch(/profanity/);
+      fs.rmSync(dir, { recursive: true });
+    });
+
+    it('does not false-positive on clean sarcastic messages', () => {
+      const dir = createTempDir();
+      writeFile(dir, '200.json', JSON.stringify([
+        "Oh great, another request. Just what I needed.",
+        "That is a classic mistake.",
+        "Hello, is it me you are looking for?"
+      ]));
+      const result = validateResponses(dir);
+      expect(result.errors.length).toBe(0);
+      fs.rmSync(dir, { recursive: true });
+    });
   });
 
   describe('actual responses/ directory', () => {

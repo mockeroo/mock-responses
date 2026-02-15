@@ -6,6 +6,12 @@
 
 const fs = require('fs');
 const path = require('path');
+const { RegExpMatcher, englishDataset, englishRecommendedTransformers } = require('obscenity');
+
+const profanityMatcher = new RegExpMatcher({
+  ...englishDataset.build(),
+  ...englishRecommendedTransformers,
+});
 
 /**
  * Validates a responses directory.
@@ -84,6 +90,11 @@ function validateResponses(responsesDir) {
       // eslint-disable-next-line no-control-regex
       if (/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/.test(msg)) {
         result.errors.push(`${file}, index ${i}: message contains a control character (not allowed).`);
+      }
+
+      // No profanity
+      if (profanityMatcher.hasMatch(msg)) {
+        result.errors.push(`${file}, index ${i}: message contains profanity (not allowed).`);
       }
 
       // Check for duplicates within the same file

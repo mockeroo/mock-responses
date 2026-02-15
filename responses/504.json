@@ -1,0 +1,7 @@
+[
+  "Gateway timeout. The upstream server left me on read.",
+  "Waited for a response from the other server. Still waiting. Always waiting.",
+  "Timed out waiting for backup. Story of my life.",
+  "The upstream server is taking forever. Must be running JavaScript.",
+  "504: I asked for help and got ghosted. Classic."
+]

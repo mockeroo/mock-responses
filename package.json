@@ -1,0 +1,36 @@
+{
+  "name": "@mockeroo/mock-responses",
+  "version": "1.0.0",
+  "description": "Responses that mock you.",
+  "main": "lib.js",
+  "files": [
+    "lib.js",
+    "responses/"
+  ],
+  "scripts": {
+    "test": "jest",
+    "validate": "node validate.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dansyuqri/mock-responses.git"
+  },
+  "keywords": [
+    "mock",
+    "http",
+    "status-codes",
+    "humor",
+    "api",
+    "sarcastic"
+  ],
+  "author": "Shooks",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2",
+    "obscenity": "^0.4.6"
+  },
+  "devDependencies": {
+    "jest": "^30.2.0",
+    "supertest": "^7.2.2"
+  }
+}

@@ -22,6 +22,9 @@ mock-server/
 │   ├── 500.json
 │   └── ...
 ├── validate.js         # Validates responses/ directory structure and rules
+├── __tests__/          # Test suite (Jest + supertest)
+│   ├── server.test.js  # Integration tests for API routes
+│   └── validate.test.js # Unit tests for validation logic
 ├── package.json        # Dependencies: express, cors, express-rate-limit
 ├── Dockerfile          # Production container (Node 22 Alpine)
 ├── .gitignore          # node_modules, .env, logs
@@ -44,6 +47,7 @@ npm start           # Starts server on port 3000 (or PORT env var)
 |---------|-------------|
 | `npm install` | Install dependencies |
 | `npm start` | Start the server (`node index.js`) |
+| `npm test` | Run all tests (Jest) |
 | `npm run validate` | Validate `responses/` directory format and rules |
 
 ## Architecture
@@ -89,8 +93,13 @@ Filenames must be valid HTTP status codes (100-599). Arrays must be non-empty. S
 
 ## Testing
 
-- **Validation only**: `npm run validate` checks every file in `responses/` for structural correctness (valid filename as status code, valid JSON array, non-empty strings, no duplicates, max length).
-- No unit test framework is configured yet.
+- **Framework**: Jest with supertest for HTTP integration tests.
+- **Run**: `npm test`
+- **TDD**: Write tests before implementing new features. All changes must have corresponding test coverage.
+- **Test files**: Located in `__tests__/` directory.
+  - `server.test.js` — Integration tests for API routes (GET /, GET /:statusCode, CORS, error handling).
+  - `validate.test.js` — Unit tests for `validateResponses()` (filename validation, content rules, edge cases).
+- **Validation**: `npm run validate` is a separate CLI check for the `responses/` directory, also covered by tests.
 
 ## CI/CD
 
@@ -111,6 +120,7 @@ This project accepts community contributions to `responses/`. Key concerns:
 - **Read before writing**: Always read existing files before proposing changes.
 - **Keep it simple**: This project values extreme simplicity. The whole server is ~50 lines. Don't add abstractions, frameworks, or patterns that aren't needed.
 - **responses/ is community-contributed**: Treat it as data, not code. Changes to the directory structure affect all contributors.
+- **TDD**: Write tests first, then implement. Run `npm test` before committing.
 - **Run validate**: After any change to files in `responses/`, run `npm run validate`.
 - **Update this file**: When adding infrastructure or conventions, update CLAUDE.md.
 - **Small commits**: Prefer focused, single-purpose commits.

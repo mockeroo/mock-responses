@@ -7,93 +7,108 @@
 const fs = require('fs');
 const path = require('path');
 
-const responsesDir = path.join(__dirname, 'responses');
+/**
+ * Validates a responses directory.
+ * Returns { errors: string[], warnings: string[], fileCount: number, messageCount: number }
+ */
+function validateResponses(responsesDir) {
+  const result = { errors: [], warnings: [], fileCount: 0, messageCount: 0 };
 
-if (!fs.existsSync(responsesDir)) {
-  console.error('FAIL: responses/ directory does not exist.');
-  process.exit(1);
-}
-
-const files = fs.readdirSync(responsesDir);
-const jsonFiles = files.filter(f => f.endsWith('.json'));
-
-if (jsonFiles.length === 0) {
-  console.error('FAIL: responses/ directory contains no .json files.');
-  process.exit(1);
-}
-
-let errors = 0;
-let totalMessages = 0;
-
-for (const file of jsonFiles) {
-  const filePath = path.join(responsesDir, file);
-  const code = path.basename(file, '.json');
-
-  // Filename must be a valid HTTP status code (100-599)
-  const num = Number(code);
-  if (isNaN(num) || num < 100 || num > 599 || !Number.isInteger(num)) {
-    console.error(`FAIL: ${file} — filename is not a valid HTTP status code (must be 100-599).`);
-    errors++;
-    continue;
+  if (!fs.existsSync(responsesDir)) {
+    result.errors.push('responses/ directory does not exist.');
+    return result;
   }
 
-  // Must be valid JSON
-  let messages;
-  try {
-    const raw = fs.readFileSync(filePath, 'utf-8');
-    messages = JSON.parse(raw);
-  } catch (err) {
-    console.error(`FAIL: ${file} — not valid JSON: ${err.message}`);
-    errors++;
-    continue;
+  const files = fs.readdirSync(responsesDir);
+  const jsonFiles = files.filter(f => f.endsWith('.json'));
+
+  if (jsonFiles.length === 0) {
+    result.errors.push('responses/ directory contains no .json files.');
+    return result;
   }
 
-  // Must be a non-empty array
-  if (!Array.isArray(messages) || messages.length === 0) {
-    console.error(`FAIL: ${file} — must be a non-empty JSON array.`);
-    errors++;
-    continue;
-  }
+  for (const file of jsonFiles) {
+    const filePath = path.join(responsesDir, file);
+    const code = path.basename(file, '.json');
 
-  for (let i = 0; i < messages.length; i++) {
-    const msg = messages[i];
-
-    if (typeof msg !== 'string') {
-      console.error(`FAIL: ${file}, index ${i}: must be a string, got ${typeof msg}.`);
-      errors++;
+    // Filename must be a valid HTTP status code (100-599)
+    const num = Number(code);
+    if (isNaN(num) || num < 100 || num > 599 || !Number.isInteger(num)) {
+      result.errors.push(`${file} — filename is not a valid HTTP status code (must be 100-599).`);
       continue;
     }
 
-    if (msg.trim().length === 0) {
-      console.error(`FAIL: ${file}, index ${i}: message is empty or whitespace.`);
-      errors++;
+    // Must be valid JSON
+    let messages;
+    try {
+      const raw = fs.readFileSync(filePath, 'utf-8');
+      messages = JSON.parse(raw);
+    } catch (err) {
+      result.errors.push(`${file} — not valid JSON: ${err.message}`);
+      continue;
     }
 
-    if (msg.length > 200) {
-      console.error(`FAIL: ${file}, index ${i}: message exceeds 200 characters (${msg.length}).`);
-      errors++;
+    // Must be a non-empty array
+    if (!Array.isArray(messages) || messages.length === 0) {
+      result.errors.push(`${file} — must be a non-empty JSON array.`);
+      continue;
     }
 
-    // Check for duplicates within the same file
-    const dupeIndex = messages.indexOf(msg);
-    if (dupeIndex !== i) {
-      console.error(`FAIL: ${file}, index ${i}: duplicate of index ${dupeIndex}.`);
-      errors++;
+    for (let i = 0; i < messages.length; i++) {
+      const msg = messages[i];
+
+      if (typeof msg !== 'string') {
+        result.errors.push(`${file}, index ${i}: must be a string, got ${typeof msg}.`);
+        continue;
+      }
+
+      if (msg.trim().length === 0) {
+        result.errors.push(`${file}, index ${i}: message is empty or whitespace.`);
+      }
+
+      if (msg.length > 200) {
+        result.errors.push(`${file}, index ${i}: message exceeds 200 characters (${msg.length}).`);
+      }
+
+      // Check for duplicates within the same file
+      const dupeIndex = messages.indexOf(msg);
+      if (dupeIndex !== i) {
+        result.errors.push(`${file}, index ${i}: duplicate of index ${dupeIndex}.`);
+      }
     }
+
+    result.messageCount += messages.length;
   }
 
-  totalMessages += messages.length;
+  result.fileCount = jsonFiles.length;
+
+  // Warn about non-JSON files
+  const nonJsonFiles = files.filter(f => !f.endsWith('.json'));
+  for (const file of nonJsonFiles) {
+    result.warnings.push(`${file} — unexpected non-JSON file in responses/ directory.`);
+  }
+
+  return result;
 }
 
-// Warn about non-JSON files
-const nonJsonFiles = files.filter(f => !f.endsWith('.json'));
-for (const file of nonJsonFiles) {
-  console.warn(`WARN: ${file} — unexpected non-JSON file in responses/ directory.`);
+// CLI mode
+if (require.main === module) {
+  const responsesDir = path.join(__dirname, 'responses');
+  const result = validateResponses(responsesDir);
+
+  for (const warn of result.warnings) {
+    console.warn(`WARN: ${warn}`);
+  }
+
+  if (result.errors.length > 0) {
+    for (const err of result.errors) {
+      console.error(`FAIL: ${err}`);
+    }
+    console.error(`\nValidation failed with ${result.errors.length} error(s).`);
+    process.exit(1);
+  } else {
+    console.log(`OK: ${result.fileCount} status codes, ${result.messageCount} total messages.`);
+  }
 }
 
-if (errors > 0) {
-  console.error(`\nValidation failed with ${errors} error(s).`);
-  process.exit(1);
-} else {
-  console.log(`OK: ${jsonFiles.length} status codes, ${totalMessages} total messages.`);
-}
+module.exports = { validateResponses };

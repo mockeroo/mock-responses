@@ -62,6 +62,10 @@ app.get('/:statusCode', (req, res) => {
   res.status(code).json({ status: code, message });
 });
 
-app.listen(PORT, () => {
-  console.log(`mock-server is roasting on port ${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`mock-server is roasting on port ${PORT}`);
+  });
+}
+
+module.exports = app;

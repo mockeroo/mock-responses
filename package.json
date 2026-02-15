@@ -20,7 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.21.2",
+    "express": "^5.2.1",
     "express-rate-limit": "^7.5.0",
     "obscenity": "^0.4.6"
   },

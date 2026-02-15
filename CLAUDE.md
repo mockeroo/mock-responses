@@ -110,9 +110,11 @@ No CI/CD pipelines configured yet. When added, `npm run validate` should be a re
 This project accepts community contributions to `responses/`. Key concerns:
 
 - **Content moderation**: All PRs must be reviewed by maintainers. CONTRIBUTING.md bans hate speech, personal info, URLs, HTML, and executable content.
-- **Validation**: `npm run validate` enforces structural rules (valid JSON, valid status codes, string-only values, 200-char max, no duplicates).
+- **Validation**: `npm run validate` enforces structural rules (valid JSON, valid status codes, string-only values, 200-char max, no duplicates) and content sanitization (no HTML tags, no URLs, no control characters).
 - **No user input processing at runtime**: The server reads no query params, no request body — it only serves random strings from a static array. This eliminates injection risks.
-- **Rate limiting**: Prevents abuse of the live endpoint.
+- **Rate limiting**: 120 req/min per IP via `express-rate-limit`. Uses `cf-connecting-ip` when behind Cloudflare.
+- **Trust proxy**: Set to `1` (single hop) to prevent IP spoofing via `X-Forwarded-For`. Only the first proxy (Cloudflare) is trusted.
+- **Security headers**: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Content-Security-Policy: default-src 'none'`, `Strict-Transport-Security`, and `x-powered-by` disabled.
 - **Plain text only**: Responses are served as JSON string values, not rendered as HTML.
 
 ## Guidelines for AI Assistants

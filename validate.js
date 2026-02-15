@@ -70,6 +70,22 @@ function validateResponses(responsesDir) {
         result.errors.push(`${file}, index ${i}: message exceeds 200 characters (${msg.length}).`);
       }
 
+      // No HTML tags (defense-in-depth against XSS if consumers render in HTML)
+      if (/<[a-zA-Z][^>]*>/.test(msg)) {
+        result.errors.push(`${file}, index ${i}: message contains HTML tags (not allowed).`);
+      }
+
+      // No URLs
+      if (/https?:\/\//.test(msg)) {
+        result.errors.push(`${file}, index ${i}: message contains a URL (not allowed).`);
+      }
+
+      // No control characters (except normal whitespace: space, tab)
+      // eslint-disable-next-line no-control-regex
+      if (/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/.test(msg)) {
+        result.errors.push(`${file}, index ${i}: message contains a control character (not allowed).`);
+      }
+
       // Check for duplicates within the same file
       const dupeIndex = messages.indexOf(msg);
       if (dupeIndex !== i) {

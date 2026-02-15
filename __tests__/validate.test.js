@@ -158,6 +158,69 @@ describe('validateResponses', () => {
     });
   });
 
+  describe('content sanitization', () => {
+    it('rejects strings containing HTML tags', () => {
+      const dir = createTempDir();
+      writeFile(dir, '200.json', '["<script>alert(1)</script>"]');
+      const result = validateResponses(dir);
+      expect(result.errors.length).toBe(1);
+      expect(result.errors[0]).toMatch(/HTML/);
+      fs.rmSync(dir, { recursive: true });
+    });
+
+    it('rejects strings containing HTML entities used for injection', () => {
+      const dir = createTempDir();
+      writeFile(dir, '200.json', '["<img onerror=alert(1) src=x>"]');
+      const result = validateResponses(dir);
+      expect(result.errors.length).toBe(1);
+      expect(result.errors[0]).toMatch(/HTML/);
+      fs.rmSync(dir, { recursive: true });
+    });
+
+    it('rejects strings containing URLs', () => {
+      const dir = createTempDir();
+      writeFile(dir, '200.json', '["Check out https://evil.com for more"]');
+      const result = validateResponses(dir);
+      expect(result.errors.length).toBe(1);
+      expect(result.errors[0]).toMatch(/URL/);
+      fs.rmSync(dir, { recursive: true });
+    });
+
+    it('rejects strings containing http:// URLs', () => {
+      const dir = createTempDir();
+      writeFile(dir, '200.json', '["Visit http://evil.com"]');
+      const result = validateResponses(dir);
+      expect(result.errors.length).toBe(1);
+      expect(result.errors[0]).toMatch(/URL/);
+      fs.rmSync(dir, { recursive: true });
+    });
+
+    it('rejects strings containing control characters', () => {
+      const dir = createTempDir();
+      writeFile(dir, '200.json', JSON.stringify(["null\x00byte"]));
+      const result = validateResponses(dir);
+      expect(result.errors.length).toBe(1);
+      expect(result.errors[0]).toMatch(/control character/);
+      fs.rmSync(dir, { recursive: true });
+    });
+
+    it('allows normal printable ASCII and common punctuation', () => {
+      const dir = createTempDir();
+      writeFile(dir, '200.json', '["It works! Don\'t worry... I\'m fine (really)."]');
+      const result = validateResponses(dir);
+      expect(result.errors.length).toBe(0);
+      fs.rmSync(dir, { recursive: true });
+    });
+
+    it('allows unicode characters like emoji and accented letters', () => {
+      const dir = createTempDir();
+      writeFile(dir, '200.json', JSON.stringify(["Très bien! 🎉"]));
+      const result = validateResponses(dir);
+      expect(result.errors.length).toBe(0);
+      fs.rmSync(dir, { recursive: true });
+    });
+  });
+
   describe('actual responses/ directory', () => {
     it('passes validation on the real responses directory', () => {
       const responsesDir = path.join(__dirname, '..', 'responses');

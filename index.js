@@ -5,8 +5,23 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
+
+// Security: disable x-powered-by header
+app.disable('x-powered-by');
+
+// Security: set protective response headers
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Content-Security-Policy', "default-src 'none'");
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  next();
+});
+
 app.use(cors());
-app.set('trust proxy', true);
+
+// Security: only trust Cloudflare's proxy layer, not arbitrary X-Forwarded-For
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 
 // Load responses from responses/ directory at startup

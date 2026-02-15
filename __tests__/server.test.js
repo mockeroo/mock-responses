@@ -82,3 +82,30 @@ describe('GET /:statusCode', () => {
     expect(res.headers['content-type']).toMatch(/application\/json/);
   });
 });
+
+describe('Security headers', () => {
+  it('does not expose x-powered-by', async () => {
+    const res = await request(app).get('/');
+    expect(res.headers['x-powered-by']).toBeUndefined();
+  });
+
+  it('sets X-Content-Type-Options: nosniff', async () => {
+    const res = await request(app).get('/');
+    expect(res.headers['x-content-type-options']).toBe('nosniff');
+  });
+
+  it('sets X-Frame-Options: DENY', async () => {
+    const res = await request(app).get('/');
+    expect(res.headers['x-frame-options']).toBe('DENY');
+  });
+
+  it('sets Content-Security-Policy to deny everything', async () => {
+    const res = await request(app).get('/');
+    expect(res.headers['content-security-policy']).toBe("default-src 'none'");
+  });
+
+  it('sets Strict-Transport-Security', async () => {
+    const res = await request(app).get('/');
+    expect(res.headers['strict-transport-security']).toMatch(/max-age=/);
+  });
+});

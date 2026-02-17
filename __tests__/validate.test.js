@@ -4,7 +4,7 @@ const os = require('os');
 const { validateResponses } = require('../validate');
 
 function createTempDir() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), 'mock-server-test-'));
+  return fs.mkdtempSync(path.join(os.tmpdir(), 'mock-responses-test-'));
 }
 
 function writeFile(dir, filename, content) {

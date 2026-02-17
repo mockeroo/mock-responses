@@ -2,9 +2,9 @@
 
 ## Project Overview
 
-**mock-server** — "Like Mockoon, but worse."
+**mock-responses** — "Like Mockoon, but worse."
 
-A server that mocks **you**. It returns real HTTP status codes with sarcastic, judgmental messages. Community members contribute funny responses via PRs to files in the `responses/` directory.
+An npm package that provides sarcastic HTTP responses. Community members contribute funny responses via PRs to files in the `responses/` directory.
 
 - **License**: MIT (Copyright 2026 Shooks)
 - **Repository owner**: Dansyuqri
@@ -14,8 +14,8 @@ A server that mocks **you**. It returns real HTTP status codes with sarcastic, j
 ## Repository Structure
 
 ```
-mock-server/
-├── index.js            # Express server — entry point, all routes
+mock-responses/
+├── lib.js              # Core library — getResponse(), getAvailableCodes(), middleware()
 ├── responses/          # Sarcastic messages, one file per HTTP status code
 │   ├── 200.json        # e.g. ["message1", "message2"]
 │   ├── 404.json
@@ -23,10 +23,9 @@ mock-server/
 │   └── ...
 ├── validate.js         # Validates responses/ directory structure and rules
 ├── __tests__/          # Test suite (Jest + supertest)
-│   ├── server.test.js  # Integration tests for API routes
+│   ├── lib.test.js     # Unit tests for library API (getResponse, middleware)
 │   └── validate.test.js # Unit tests for validation logic
-├── package.json        # Dependencies: express, cors, express-rate-limit
-├── Dockerfile          # Production container (Node 22 Alpine)
+├── package.json        # Dependencies: express, obscenity
 ├── .gitignore          # node_modules, .env, logs
 ├── CONTRIBUTING.md     # Contribution guidelines and content rules
 ├── CLAUDE.md           # This file
@@ -38,7 +37,7 @@ mock-server/
 
 ```bash
 npm install
-npm start           # Starts server on port 3000 (or PORT env var)
+npm test
 ```
 
 ## Common Commands
@@ -46,18 +45,22 @@ npm start           # Starts server on port 3000 (or PORT env var)
 | Command | Description |
 |---------|-------------|
 | `npm install` | Install dependencies |
-| `npm start` | Start the server (`node index.js`) |
 | `npm test` | Run all tests (Jest) |
 | `npm run validate` | Validate `responses/` directory format and rules |
 
 ## Architecture
 
-- **Single-file server** (`index.js`, ~50 lines): Express app with two routes.
-  - `GET /` — returns project info and available status codes.
-  - `GET /:statusCode` — returns the matching HTTP status code with a random sarcastic message from `responses/`.
-- **Data loading**: All `.json` files in `responses/` are read at startup into memory. No database.
-- **Rate limiting**: 120 req/min per IP via `express-rate-limit`. Uses `cf-connecting-ip` header when behind Cloudflare.
-- **CORS**: Enabled for all origins (public API).
+This is an npm package library. Users install `mock-responses` and import into their own servers:
+
+- `getResponse(statusCode)` — returns `{ status, message }` or `null`
+- `getAvailableCodes()` — returns sorted array of available codes
+- `middleware()` — returns an Express router mountable at any path
+
+`package.json` `main` points to `lib.js`.
+
+### Data Loading
+
+All `.json` files in `responses/` are read at startup into memory. No database.
 
 ### Response Format
 
@@ -88,7 +91,7 @@ Filenames must be valid HTTP status codes (100-599). Arrays must be non-empty. S
 
 - **Language**: Plain JavaScript (Node.js, CommonJS `require`)
 - **No build step**: Code runs directly with `node`
-- **Simplicity first**: The entire server is intentionally one file. Don't split into routes/controllers/middleware unless there's a strong reason.
+- **Simplicity first**: The library is one file (`lib.js`). Don't add abstractions unless there's a strong reason.
 - **No TypeScript, no linter configured** (yet)
 
 ## Testing
@@ -97,7 +100,7 @@ Filenames must be valid HTTP status codes (100-599). Arrays must be non-empty. S
 - **Run**: `npm test`
 - **TDD**: Write tests before implementing new features. All changes must have corresponding test coverage.
 - **Test files**: Located in `__tests__/` directory.
-  - `server.test.js` — Integration tests for API routes (GET /, GET /:statusCode, CORS, error handling).
+  - `lib.test.js` — Unit tests for `getResponse()`, `getAvailableCodes()`, and `middleware()`.
   - `validate.test.js` — Unit tests for `validateResponses()` (filename validation, content rules, edge cases).
 - **Validation**: `npm run validate` is a separate CLI check for the `responses/` directory, also covered by tests.
 
@@ -114,16 +117,13 @@ This project accepts community contributions to `responses/`. Key concerns:
 
 - **Content moderation**: All PRs must be reviewed by maintainers. CONTRIBUTING.md bans hate speech, personal info, URLs, HTML, and executable content.
 - **Validation**: `npm run validate` enforces structural rules (valid JSON, valid status codes, string-only values, 200-char max, no duplicates) and content sanitization (no HTML tags, no URLs, no control characters).
-- **No user input processing at runtime**: The server reads no query params, no request body — it only serves random strings from a static array. This eliminates injection risks.
-- **Rate limiting**: 120 req/min per IP via `express-rate-limit`. Uses `cf-connecting-ip` when behind Cloudflare.
-- **Trust proxy**: Set to `1` (single hop) to prevent IP spoofing via `X-Forwarded-For`. Only the first proxy (Cloudflare) is trusted.
-- **Security headers**: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Content-Security-Policy: default-src 'none'`, `Strict-Transport-Security`, and `x-powered-by` disabled.
+- **No user input processing at runtime**: The library only serves random strings from a static array. This eliminates injection risks.
 - **Plain text only**: Responses are served as JSON string values, not rendered as HTML.
 
 ## Guidelines for AI Assistants
 
 - **Read before writing**: Always read existing files before proposing changes.
-- **Keep it simple**: This project values extreme simplicity. The whole server is ~50 lines. Don't add abstractions, frameworks, or patterns that aren't needed.
+- **Keep it simple**: This project values extreme simplicity. Don't add abstractions, frameworks, or patterns that aren't needed.
 - **responses/ is community-contributed**: Treat it as data, not code. Changes to the directory structure affect all contributors.
 - **TDD**: Write tests first, then implement. Run `npm test` before committing.
 - **Run validate**: After any change to files in `responses/`, run `npm run validate`.

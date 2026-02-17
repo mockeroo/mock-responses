@@ -1,10 +1,9 @@
 {
-  "name": "mock-server",
+  "name": "mock-responses",
   "version": "1.0.0",
   "description": "Like Mockoon, but worse. A server that mocks you with sarcastic HTTP status responses.",
-  "main": "index.js",
+  "main": "lib.js",
   "scripts": {
-    "start": "node index.js",
     "test": "jest",
     "validate": "node validate.js"
   },
@@ -19,9 +18,7 @@
   "author": "Shooks",
   "license": "MIT",
   "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^5.2.1",
-    "express-rate-limit": "^7.5.0",
+    "express": "^4.21.2",
     "obscenity": "^0.4.6"
   },
   "devDependencies": {

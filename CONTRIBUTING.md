@@ -1,4 +1,4 @@
-# Contributing to mock-server
+# Contributing to mock-responses
 
 Thanks for wanting to make HTTP errors funnier! Here's how to contribute.
 

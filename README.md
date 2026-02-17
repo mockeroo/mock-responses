@@ -4,6 +4,28 @@ Like Mockoon, but worse.
 
 Responses that mock you. An npm package that provides sarcastic, judgmental HTTP responses you can mount in your own Express app.
 
+## Try It Live
+
+A live server running this package is available at **https://mock-server.dansyuqri.workers.dev/**
+
+Hit it directly from your terminal — no installation required:
+
+```bash
+# Project info and available status codes
+curl https://mock-server.dansyuqri.workers.dev/
+
+# Get a sarcastic 404
+curl https://mock-server.dansyuqri.workers.dev/404
+
+# Get a sarcastic 500
+curl https://mock-server.dansyuqri.workers.dev/500
+
+# Or use it as a real mock endpoint in your tests
+curl -i https://mock-server.dansyuqri.workers.dev/418
+```
+
+Each endpoint returns the actual HTTP status code, so it works as a real mock server for testing error handling.
+
 ## Installation
 
 ```bash

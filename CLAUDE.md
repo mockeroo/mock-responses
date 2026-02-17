@@ -107,9 +107,22 @@ Filenames must be valid HTTP status codes (100-599). Arrays must be non-empty. S
 ## CI/CD
 
 - **GitHub Actions**: `.github/workflows/ci.yml` runs on pushes to `main` and all PRs.
-  - Matrix: Node.js 20, 22, 24.
-  - Steps: `npm ci` → `npm run validate` → `npm test`.
+  - `test` job: Matrix across Node.js 20, 22, 24. Steps: `npm ci` → `npm run validate` → `npm test`.
+  - `publish` job: Runs after all `test` matrix jobs pass, on pushes to `main` only. Uses `semantic-release` to determine the version bump, create a GitHub Release, and publish to npm.
+- **semantic-release**: Configured in `.releaserc.json`. Analyzes commit messages since the last release using [Conventional Commits](https://www.conventionalcommits.org/) to determine the semver bump (`fix:` → patch, `feat:` → minor, `feat!:` / `BREAKING CHANGE:` → major). No-op if no releasable commits are found.
+- **Required secret**: `NPM_TOKEN` must be set in the repository's GitHub Actions secrets (Settings → Secrets → Actions). Generate a token at npmjs.com with "Automation" type.
 - **Dependabot**: `.github/dependabot.yml` checks npm and GitHub Actions dependencies weekly.
+
+### Conventional Commits
+
+PR titles (and squash-merge commit messages) must follow Conventional Commits so semantic-release can determine the right version bump:
+
+| Prefix | Example | Bump |
+|--------|---------|------|
+| `fix:` | `fix: correct typo in 500 response` | patch |
+| `feat:` | `feat: add 507 status code responses` | minor |
+| `feat!:` or `BREAKING CHANGE:` in footer | `feat!: rename getResponse to get` | major |
+| `chore:`, `docs:`, `test:` | `docs: update README` | none |
 
 ## Security Considerations
 

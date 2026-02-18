@@ -50,7 +50,7 @@ npm test
 
 ## Architecture
 
-This is an npm package library. Users install `@mockery/mock-responses` and import into their own apps:
+This is an npm package library. Users install `@mockeroo/mock-responses` and import into their own apps:
 
 - `getResponse(statusCode)` — returns `{ status, message }` or `null`
 - `getAvailableCodes()` — returns sorted array of available codes

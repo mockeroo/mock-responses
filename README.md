@@ -29,7 +29,7 @@ Each endpoint returns the actual HTTP status code, so it works as a real mock se
 ## Installation
 
 ```bash
-npm install @mockery/mock-responses
+npm install @mockeroo/mock-responses
 ```
 
 ## Usage
@@ -39,7 +39,7 @@ npm install @mockery/mock-responses
 Returns a random sarcastic `{ status, message }` for the given HTTP status code, or `null` if unavailable.
 
 ```javascript
-const { getResponse } = require('@mockery/mock-responses');
+const { getResponse } = require('@mockeroo/mock-responses');
 
 const result = getResponse(404);
 // { status: 404, message: "Whatever you're looking for, it's not here. Just like my will to help you." }
@@ -53,7 +53,7 @@ const missing = getResponse(999);
 Returns a sorted array of all available HTTP status codes.
 
 ```javascript
-const { getAvailableCodes } = require('@mockery/mock-responses');
+const { getAvailableCodes } = require('@mockeroo/mock-responses');
 
 console.log(getAvailableCodes());
 // [200, 201, 204, 301, 302, 304, 400, 401, 403, 404, ...]
@@ -65,7 +65,7 @@ Returns an Express router you can mount at any path:
 
 ```javascript
 const express = require('express');
-const { middleware } = require('@mockery/mock-responses');
+const { middleware } = require('@mockeroo/mock-responses');
 
 const app = express();
 app.use('/mock', middleware());
@@ -99,7 +99,7 @@ Want more? [Contribute one!](CONTRIBUTING.md)
 const express = require('express');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
-const { middleware } = require('@mockery/mock-responses');
+const { middleware } = require('@mockeroo/mock-responses');
 
 const app = express();
 

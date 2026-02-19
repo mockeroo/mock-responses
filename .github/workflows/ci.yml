@@ -64,11 +64,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          registry-url: https://registry.npmjs.org
 
       - run: npm ci
-
-      - name: Remove token placeholder so OIDC trusted publishing can run
-        run: npm config delete //registry.npmjs.org/:_authToken
 
       - run: npm publish --provenance --access public

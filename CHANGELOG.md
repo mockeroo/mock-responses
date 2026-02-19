@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.3](https://github.com/Dansyuqri/mock-responses/compare/v1.2.2...v1.2.3) (2026-02-19)
+
+
+### Bug Fixes
+
+* use npm config delete instead of sed to remove _authToken ([84abbe4](https://github.com/Dansyuqri/mock-responses/commit/84abbe4e855577af945411cff9265e156235610e))
+* use npm config delete instead of sed to remove _authToken ([a827af1](https://github.com/Dansyuqri/mock-responses/commit/a827af1481642746193d7eaa105457d055667557))
+
 ## [1.2.2](https://github.com/Dansyuqri/mock-responses/compare/v1.2.1...v1.2.2) (2026-02-19)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.5](https://github.com/Dansyuqri/mock-responses/compare/v1.2.4...v1.2.5) (2026-02-19)
+
+
+### Bug Fixes
+
+* Modify CI workflow for Node.js version and npm publish ([4e7fc3e](https://github.com/Dansyuqri/mock-responses/commit/4e7fc3eddd892bc1bc2559c769a413cd70dbd5ef))
+
 ## [1.2.4](https://github.com/Dansyuqri/mock-responses/compare/v1.2.3...v1.2.4) (2026-02-19)
 
 

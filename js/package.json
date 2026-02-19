@@ -5,6 +5,7 @@
   "main": "lib.js",
   "files": [
     "lib.js",
+    "validate.js",
     "responses/"
   ],
   "scripts": {
@@ -13,7 +14,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Dansyuqri/mock-responses.git"
+    "url": "git+https://github.com/Dansyuqri/mock-responses.git",
+    "directory": "js"
   },
   "keywords": [
     "mock",

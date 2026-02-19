@@ -120,7 +120,9 @@ function validateResponses(responsesDir) {
 
 // CLI mode
 if (require.main === module) {
-  const responsesDir = path.join(__dirname, 'responses');
+  const responsesDir = fs.existsSync(path.join(__dirname, 'responses'))
+    ? path.join(__dirname, 'responses')
+    : path.join(__dirname, '..', 'responses');
   const result = validateResponses(responsesDir);
 
   for (const warn of result.warnings) {

@@ -5,8 +5,8 @@ const express = require('express');
 
 const { getResponse, getAvailableCodes, middleware } = require('../lib');
 
-// Load actual responses for assertions
-const responsesDir = path.join(__dirname, '..', 'responses');
+// Load actual responses for assertions (responses/ lives at the repo root)
+const responsesDir = path.join(__dirname, '..', '..', 'responses');
 const responseFiles = fs.readdirSync(responsesDir).filter(f => f.endsWith('.json'));
 const allResponses = {};
 for (const file of responseFiles) {

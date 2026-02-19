@@ -253,7 +253,7 @@ describe('validateResponses', () => {
 
   describe('actual responses/ directory', () => {
     it('passes validation on the real responses directory', () => {
-      const responsesDir = path.join(__dirname, '..', 'responses');
+      const responsesDir = path.join(__dirname, '..', '..', 'responses');
       const result = validateResponses(responsesDir);
       expect(result.errors).toEqual([]);
       expect(result.fileCount).toBeGreaterThan(0);

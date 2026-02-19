@@ -2,8 +2,10 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 
-// Load responses from responses/ directory
-const responsesDir = path.join(__dirname, 'responses');
+// Load responses — bundled at ./responses when installed, ../responses in the monorepo
+const responsesDir = fs.existsSync(path.join(__dirname, 'responses'))
+  ? path.join(__dirname, 'responses')
+  : path.join(__dirname, '..', 'responses');
 const responses = {};
 for (const file of fs.readdirSync(responsesDir)) {
   if (!file.endsWith('.json')) continue;

@@ -1,6 +1,6 @@
 {
   "name": "@mockeroo/mock-responses",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Responses that mock you.",
   "main": "lib.js",
   "files": [

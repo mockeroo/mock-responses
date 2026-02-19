@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mockeroo-mock-responses"
+version = "1.0.0"
+description = "Responses that mock you."
+license = { text = "MIT" }
+authors = [{ name = "Shooks" }]
+keywords = ["mock", "http", "status-codes", "humor", "api", "sarcastic"]
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.urls]
+Homepage = "https://github.com/Dansyuqri/mock-responses"
+Repository = "https://github.com/Dansyuqri/mock-responses"
+
+[tool.hatch.build.targets.wheel]
+packages = ["mock_responses"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

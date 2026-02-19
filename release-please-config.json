@@ -3,6 +3,10 @@
     "js": {
       "release-type": "node",
       "package-name": "@mockeroo/mock-responses"
+    },
+    "python": {
+      "release-type": "python",
+      "package-name": "mockeroo-mock-responses"
     }
   }
 }

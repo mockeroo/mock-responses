@@ -1,7 +1,5 @@
 # mock-responses
 
-Like Mockoon, but worse.
-
 Responses that mock you. An npm package that provides sarcastic, judgmental HTTP responses you can mount in your own Express app.
 
 ## Try It Live

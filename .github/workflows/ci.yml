@@ -81,6 +81,8 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release.outputs.js_tag_name }}
       - uses: actions/setup-node@v4
         with:
           node-version: '24'

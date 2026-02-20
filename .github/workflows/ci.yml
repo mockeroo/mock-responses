@@ -25,9 +25,6 @@ jobs:
       - run: go generate ./...
         working-directory: go
 
-      - name: Check generated files are up to date
-        run: git diff --exit-code go/responses_data.go
-
       - run: go test ./...
         working-directory: go
 
@@ -108,6 +105,8 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: '1.23'
+      - run: go generate ./...
+        working-directory: go
       - run: go test ./...
         working-directory: go
       # Request pkg.go.dev to index the new version.

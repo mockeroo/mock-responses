@@ -47,7 +47,7 @@ function middleware() {
       tagline: 'Like Mockoon, but worse.',
       usage: 'GET /:statusCode — e.g. GET /404',
       availableCodes: validCodes,
-      repository: 'https://github.com/Dansyuqri/mock-responses'
+      repository: 'https://github.com/mockeroo/mock-responses'
     });
   });
 

@@ -9,19 +9,16 @@
 //	if resp != nil {
 //	    fmt.Println(resp.Status, resp.Message)
 //	}
+//
+// Response data is generated from responses/*.json via go generate.
+//
+//go:generate go run gen.go
 package mockresponse
 
 import (
-	"embed"
-	"encoding/json"
 	"math/rand"
 	"sort"
-	"strconv"
-	"strings"
 )
-
-//go:embed responses/*.json
-var responseFiles embed.FS
 
 // Response holds an HTTP status code and a randomly chosen sarcastic message.
 type Response struct {
@@ -29,44 +26,10 @@ type Response struct {
 	Message string `json:"message"`
 }
 
-var (
-	responses      map[int][]string
-	availableCodes []int
-)
+var availableCodes []int
 
 func init() {
-	responses = make(map[int][]string)
-
-	entries, err := responseFiles.ReadDir("responses")
-	if err != nil {
-		return
-	}
-
-	for _, entry := range entries {
-		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".json") {
-			continue
-		}
-
-		codeStr := strings.TrimSuffix(entry.Name(), ".json")
-		code, err := strconv.Atoi(codeStr)
-		if err != nil {
-			continue
-		}
-
-		data, err := responseFiles.ReadFile("responses/" + entry.Name())
-		if err != nil {
-			continue
-		}
-
-		var messages []string
-		if err := json.Unmarshal(data, &messages); err != nil || len(messages) == 0 {
-			continue
-		}
-
-		responses[code] = messages
-	}
-
-	for code := range responses {
+	for code := range embeddedResponses {
 		availableCodes = append(availableCodes, code)
 	}
 	sort.Ints(availableCodes)
@@ -75,7 +38,7 @@ func init() {
 // GetResponse returns a Response with a random sarcastic message for the given HTTP
 // status code, or nil if the code is not recognised.
 func GetResponse(statusCode int) *Response {
-	messages, ok := responses[statusCode]
+	messages, ok := embeddedResponses[statusCode]
 	if !ok {
 		return nil
 	}

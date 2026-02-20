@@ -61,9 +61,8 @@ func TestGetAvailableCodes_Sorted(t *testing.T) {
 
 func TestGetAvailableCodes_ContainsExpected(t *testing.T) {
 	expected := []int{200, 201, 204, 400, 401, 403, 404, 500}
-	codes := mockresponse.GetAvailableCodes()
-	codeSet := make(map[int]bool, len(codes))
-	for _, c := range codes {
+	codeSet := make(map[int]bool)
+	for _, c := range mockresponse.GetAvailableCodes() {
 		codeSet[c] = true
 	}
 	for _, c := range expected {

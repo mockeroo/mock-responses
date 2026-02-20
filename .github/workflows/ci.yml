@@ -23,6 +23,7 @@ jobs:
           go-version: ${{ matrix.go-version }}
 
       - run: go test ./...
+        working-directory: go
 
   test-js:
     runs-on: ubuntu-latest
@@ -59,6 +60,8 @@ jobs:
     outputs:
       js_release_created: ${{ steps.release.outputs['js--release_created'] }}
       js_tag_name: ${{ steps.release.outputs['js--tag_name'] }}
+      go_release_created: ${{ steps.release.outputs['go--release_created'] }}
+      go_tag_name: ${{ steps.release.outputs['go--tag_name'] }}
     steps:
       - uses: googleapis/release-please-action@v4
         id: release
@@ -85,3 +88,28 @@ jobs:
         working-directory: js
       - run: npm publish
         working-directory: js
+
+  publish-go:
+    runs-on: ubuntu-latest
+    needs: release
+    if: needs.release.outputs.go_release_created == 'true'
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release.outputs.go_tag_name }}
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+      - run: go test ./...
+        working-directory: go
+      # Request pkg.go.dev to index the new version.
+      - name: Notify pkg.go.dev
+        run: |
+          VERSION=$(go list -m 2>/dev/null | awk '{print $1}')
+          TAG=${{ needs.release.outputs.go_tag_name }}
+          # Tag format is go/vX.Y.Z; extract the semver part
+          SEMVER=${TAG#go/}
+          curl -sf "https://proxy.golang.org/github.com/mockeroo/mock-response/go/@v/${SEMVER}.info" || true
+        working-directory: go

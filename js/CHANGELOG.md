@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/mockeroo/mock-responses/compare/mock-responses-v1.3.0...mock-responses-v1.3.1) (2026-02-20)
+
+
+### Bug Fixes
+
+* repo url reference ([#37](https://github.com/mockeroo/mock-responses/issues/37)) ([3539816](https://github.com/mockeroo/mock-responses/commit/353981638f1494bbd105ea0aec6cee9e888eb99a))
+
 ## [1.3.0](https://github.com/mockeroo/mock-responses/compare/mock-responses-v1.2.5...mock-responses-v1.3.0) (2026-02-20)
 
 

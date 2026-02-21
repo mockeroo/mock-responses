@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/mockeroo/mock-responses/compare/mockeroo-mock-responses-v0.2.0...mockeroo-mock-responses-v0.3.0) (2026-02-21)
+
+
+### Features
+
+* add language-specific READMEs for each release package ([#48](https://github.com/mockeroo/mock-responses/issues/48)) ([225c8b5](https://github.com/mockeroo/mock-responses/commit/225c8b5af694c70b1664c6865f872134326b5751))
+
 ## [0.2.0](https://github.com/mockeroo/mock-responses/compare/mockeroo-mock-responses-v0.1.0...mockeroo-mock-responses-v0.2.0) (2026-02-21)
 
 

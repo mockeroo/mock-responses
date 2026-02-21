@@ -24,138 +24,19 @@ curl -i https://mock-server.mockeroo.workers.dev/418
 
 Each endpoint returns the actual HTTP status code, so it works as a real mock server for testing error handling.
 
-## Installation
+## Installation & Usage
 
-**npm**
-```bash
-npm install @mockeroo/mock-responses
-```
+Each language has its own README with installation instructions, API reference, and full examples:
 
-**Rust**
-```toml
-# Cargo.toml
-[dependencies]
-mockeroo-mock-responses = "0.1"
-```
-
-**Python**
-```bash
-pip install mockeroo-mock-responses
-```
-
-**Go**
-```bash
-go get github.com/mockeroo/mock-response/go
-```
-
-## Usage
-
-### JavaScript
-
-#### `getResponse(statusCode)`
-
-Returns a random sarcastic `{ status, message }` for the given HTTP status code, or `null` if unavailable.
-
-```javascript
-const { getResponse } = require('@mockeroo/mock-responses');
-
-const result = getResponse(404);
-// { status: 404, message: "Whatever you're looking for, it's not here. Just like my will to help you." }
-
-const missing = getResponse(999);
-// null
-```
-
-#### `getAvailableCodes()`
-
-Returns a sorted array of all available HTTP status codes.
-
-```javascript
-const { getAvailableCodes } = require('@mockeroo/mock-responses');
-
-console.log(getAvailableCodes());
-// [200, 201, 204, 301, 302, 304, 400, 401, 403, 404, ...]
-```
-
-### Rust
-
-#### `get_response(status_code)`
-
-Returns a random sarcastic `Response` for the given HTTP status code, or `None` if unavailable.
-
-```rust
-use mockeroo_mock_responses::get_response;
-
-if let Some(resp) = get_response(404) {
-    println!("{} — {}", resp.status, resp.message);
-}
-```
-
-#### `get_available_codes()`
-
-Returns a sorted `Vec<u16>` of all supported HTTP status codes.
-
-```rust
-use mockeroo_mock_responses::get_available_codes;
-
-println!("{:?}", get_available_codes());
-// [200, 201, 204, 301, 302, 304, 400, 401, 403, 404, ...]
-```
-
-### Python
-
-#### `get_response(status_code)`
-
-Returns a random sarcastic `Response` for the given HTTP status code, or `None` if unavailable.
-
-```python
-from mockeroo_mock_responses import get_response
-
-resp = get_response(404)
-if resp is not None:
-    print(resp.status, resp.message)
-```
-
-#### `get_available_codes()`
-
-Returns a sorted list of all supported HTTP status codes.
-
-```python
-from mockeroo_mock_responses import get_available_codes
-
-print(get_available_codes())
-# [200, 201, 204, 301, 302, 304, 400, 401, 403, 404, ...]
-```
-
-### Go
-
-```go
-import mockresponse "github.com/mockeroo/mock-response/go"
-
-resp := mockresponse.GetResponse(404)
-if resp != nil {
-    fmt.Println(resp.Status, resp.Message)
-}
-```
-
-### JavaScript — Express middleware
-
-#### `middleware()`
-
-Returns an Express router you can mount at any path:
-
-```javascript
-const express = require('express');
-const { middleware } = require('@mockeroo/mock-responses');
-
-const app = express();
-app.use('/mock', middleware());
-app.listen(3000);
-```
-
-This gives you:
-- `GET /mock/` — project info and available codes
-- `GET /mock/:statusCode` — sarcastic response with the real HTTP status code
+| Language | Package | README |
+|----------|---------|--------|
+| JavaScript / Node.js | `@mockeroo/mock-responses` (npm) | [js/README.md](js/README.md) |
+| Python | `mockeroo-mock-responses` (PyPI) | [python/README.md](python/README.md) |
+| Go | `github.com/mockeroo/mock-response/go` | [go/README.md](go/README.md) |
+| Rust | `mockeroo-mock-responses` (crates.io) | [rust/README.md](rust/README.md) |
+| Java | `com.mockeroo:mock-responses` (Maven) | [java/README.md](java/README.md) |
+| PHP | `mockeroo/mock-responses` (Composer) | [php/README.md](php/README.md) |
+| Ruby | `mockeroo-mock-responses` (gem) | [ruby/README.md](ruby/README.md) |
 
 ### Example Response
 
@@ -173,32 +54,6 @@ The response actually comes back with HTTP status 404 — so it works as a real 
 `200` `201` `204` `301` `302` `304` `400` `401` `403` `404` `405` `408` `409` `413` `418` `429` `500` `502` `503` `504`
 
 Want more? [Contribute one!](CONTRIBUTING.md)
-
-## Full Example
-
-```javascript
-const express = require('express');
-const cors = require('cors');
-const rateLimit = require('express-rate-limit');
-const { middleware } = require('@mockeroo/mock-responses');
-
-const app = express();
-
-app.use(cors());
-
-const limiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 120,
-  message: { status: 429, message: "Rate limit exceeded." }
-});
-app.use(limiter);
-
-app.use('/', middleware());
-
-app.listen(3000, () => {
-  console.log('Server running on port 3000');
-});
-```
 
 ## Project Structure
 

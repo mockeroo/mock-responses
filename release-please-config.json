@@ -18,20 +18,20 @@
       "package-name": "mockeroo-mock-responses",
       "tag-prefix": "python/"
     },
-    "php": {
-      "release-type": "php",
-      "package-name": "mockeroo/mock-responses",
-      "tag-prefix": "php/"
+    "ruby": {
+      "release-type": "ruby",
+      "package-name": "mockeroo-mock-responses",
+      "tag-prefix": "ruby/"
     },
     "java": {
       "release-type": "maven",
       "package-name": "com.mockeroo:mock-responses",
       "tag-prefix": "java/"
     },
-    "ruby": {
-      "release-type": "ruby",
-      "package-name": "mockeroo-mock-responses",
-      "tag-prefix": "ruby/"
+    "php": {
+      "release-type": "php",
+      "package-name": "mockeroo/mock-responses",
+      "tag-prefix": "php/"
     }
   }
 }

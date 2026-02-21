@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
+require_relative 'lib/mockeroo_mock_responses/version'
+
 Gem::Specification.new do |spec|
   spec.name          = 'mockeroo-mock-responses'
-  spec.version       = '0.1.0'
+  spec.version       = MockerooMockResponses::VERSION
   spec.authors       = ['mockeroo']
   spec.summary       = 'Sarcastic HTTP status code responses for testing and development.'
   spec.description   = 'Like Mockoon, but worse. Returns sarcastic mock HTTP responses.'

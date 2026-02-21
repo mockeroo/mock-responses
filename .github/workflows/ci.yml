@@ -89,9 +89,27 @@ jobs:
       - run: npm test
         working-directory: js
 
+  test-rust:
+    runs-on: ubuntu-latest
+    needs: validate
+
+    strategy:
+      matrix:
+        rust-version: [stable, beta]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust-version }}
+
+      - run: cargo test
+        working-directory: rust
+
   release:
     runs-on: ubuntu-latest
-    needs: [test-go, test-js]
+    needs: [test-go, test-js, test-rust]
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     permissions:
       contents: write
@@ -101,6 +119,8 @@ jobs:
       js_tag_name: ${{ steps.release.outputs['js--tag_name'] }}
       go_release_created: ${{ steps.release.outputs['go--release_created'] }}
       go_tag_name: ${{ steps.release.outputs['go--tag_name'] }}
+      rust_release_created: ${{ steps.release.outputs['rust--release_created'] }}
+      rust_tag_name: ${{ steps.release.outputs['rust--tag_name'] }}
     steps:
       - uses: googleapis/release-please-action@v4
         id: release
@@ -160,3 +180,21 @@ jobs:
           SEMVER=${TAG#go/}
           curl -sf "https://proxy.golang.org/github.com/mockeroo/mock-response/go/@v/${SEMVER}.info" || true
         working-directory: go
+
+  publish-crates:
+    runs-on: ubuntu-latest
+    needs: release
+    if: needs.release.outputs.rust_release_created == 'true'
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release.outputs.rust_tag_name }}
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - run: cargo publish
+        working-directory: rust
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}

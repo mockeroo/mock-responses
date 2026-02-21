@@ -7,6 +7,10 @@
     "go": {
       "release-type": "go",
       "package-name": "github.com/mockeroo/mock-response/go"
+    },
+    "rust": {
+      "release-type": "rust",
+      "package-name": "mockeroo-mock-responses"
     }
   }
 }

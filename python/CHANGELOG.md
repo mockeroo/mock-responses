@@ -5,15 +5,7 @@
 
 ### Features
 
-* trigger release ([689fa6e](https://github.com/mockeroo/mock-responses/commit/689fa6e059c51c20efccff06e68f19f20946f262))
-* trigger release ([a581de7](https://github.com/mockeroo/mock-responses/commit/a581de71bd399c5c98d5e020be77986506e9c652))
-* trigger release ([85d03c4](https://github.com/mockeroo/mock-responses/commit/85d03c47359dd42405da00a012be24f391707dc5))
-
-## [0.2.0](https://github.com/mockeroo/mock-responses/compare/mockeroo-mock-responses-v0.1.0...mockeroo-mock-responses-v0.2.0) (2026-02-21)
-
-
-### Features
-
+* add Python package (mockeroo-mock-responses) ([#44](https://github.com/mockeroo/mock-responses/issues/44)) ([96689e5](https://github.com/mockeroo/mock-responses/commit/96689e53141961a8b4c63ed9ae13115639982a50))
 * trigger release ([689fa6e](https://github.com/mockeroo/mock-responses/commit/689fa6e059c51c20efccff06e68f19f20946f262))
 * trigger release ([a581de7](https://github.com/mockeroo/mock-responses/commit/a581de71bd399c5c98d5e020be77986506e9c652))
 * trigger release ([85d03c4](https://github.com/mockeroo/mock-responses/commit/85d03c47359dd42405da00a012be24f391707dc5))

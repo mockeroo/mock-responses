@@ -26,13 +26,28 @@ Each endpoint returns the actual HTTP status code, so it works as a real mock se
 
 ## Installation
 
+**npm**
 ```bash
 npm install @mockeroo/mock-responses
 ```
 
+**Rust**
+```toml
+# Cargo.toml
+[dependencies]
+mockeroo-mock-responses = "0.1"
+```
+
+**Go**
+```bash
+go get github.com/mockeroo/mock-response/go
+```
+
 ## Usage
 
-### `getResponse(statusCode)`
+### JavaScript
+
+#### `getResponse(statusCode)`
 
 Returns a random sarcastic `{ status, message }` for the given HTTP status code, or `null` if unavailable.
 
@@ -46,7 +61,7 @@ const missing = getResponse(999);
 // null
 ```
 
-### `getAvailableCodes()`
+#### `getAvailableCodes()`
 
 Returns a sorted array of all available HTTP status codes.
 
@@ -57,7 +72,45 @@ console.log(getAvailableCodes());
 // [200, 201, 204, 301, 302, 304, 400, 401, 403, 404, ...]
 ```
 
-### `middleware()`
+### Rust
+
+#### `get_response(status_code)`
+
+Returns a random sarcastic `Response` for the given HTTP status code, or `None` if unavailable.
+
+```rust
+use mockeroo_mock_responses::get_response;
+
+if let Some(resp) = get_response(404) {
+    println!("{} — {}", resp.status, resp.message);
+}
+```
+
+#### `get_available_codes()`
+
+Returns a sorted `Vec<u16>` of all supported HTTP status codes.
+
+```rust
+use mockeroo_mock_responses::get_available_codes;
+
+println!("{:?}", get_available_codes());
+// [200, 201, 204, 301, 302, 304, 400, 401, 403, 404, ...]
+```
+
+### Go
+
+```go
+import mockresponse "github.com/mockeroo/mock-response/go"
+
+resp := mockresponse.GetResponse(404)
+if resp != nil {
+    fmt.Println(resp.Status, resp.Message)
+}
+```
+
+### JavaScript — Express middleware
+
+#### `middleware()`
 
 Returns an Express router you can mount at any path:
 
@@ -121,17 +174,24 @@ app.listen(3000, () => {
 
 ```
 mock-responses/
-├── lib.js              # Core library (getResponse, getAvailableCodes, middleware)
-├── responses/          # Sarcastic messages, one file per status code
+├── responses/          # Canonical data — one JSON file per status code
 │   ├── 200.json
 │   ├── 404.json
 │   ├── 500.json
 │   └── ...
-├── validate.js         # Validates responses/ for contributors
-├── __tests__/          # Test suite
-│   ├── lib.test.js
-│   └── validate.test.js
-├── package.json
+├── js/                 # npm package (@mockeroo/mock-responses)
+│   ├── lib.js
+│   ├── validate.js
+│   ├── __tests__/
+│   └── package.json
+├── go/                 # Go module (github.com/mockeroo/mock-response/go)
+│   ├── lib.go
+│   ├── gen.go
+│   └── lib_test.go
+├── rust/               # Rust crate (mockeroo-mock-responses)
+│   ├── build.rs        # Generates response data at compile time
+│   ├── src/lib.rs
+│   └── Cargo.toml
 ├── CONTRIBUTING.md
 └── README.md
 ```

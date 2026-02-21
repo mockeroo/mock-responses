@@ -1,0 +1,28 @@
+{
+  "name": "mockeroo/mock-responses",
+  "description": "Sarcastic HTTP status code responses for testing and development.",
+  "type": "library",
+  "license": "MIT",
+  "version": "0.1.0",
+  "keywords": ["mock", "http", "status-codes", "humor", "api", "sarcastic"],
+  "homepage": "https://github.com/mockeroo/mock-responses",
+  "require": {
+    "php": ">=8.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^11"
+  },
+  "autoload": {
+    "psr-4": {
+      "Mockeroo\\MockResponses\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Mockeroo\\MockResponses\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit tests"
+  }
+}

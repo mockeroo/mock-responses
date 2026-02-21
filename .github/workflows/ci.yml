@@ -89,6 +89,28 @@ jobs:
       - run: npm test
         working-directory: js
 
+  generate-java:
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: temurin
+
+      - run: |
+          mkdir -p gen/out
+          javac gen/GenerateResponses.java -d gen/out
+          java -cp gen/out GenerateResponses
+        working-directory: java
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: generated-java
+          path: java/src/main/java/com/mockeroo/mockresponses/ResponsesData.java
+
   test-rust:
     runs-on: ubuntu-latest
     needs: validate
@@ -125,9 +147,72 @@ jobs:
       - run: uv run --with pytest pytest tests/
         working-directory: python
 
+  test-php:
+    runs-on: ubuntu-latest
+    needs: validate
+
+    strategy:
+      matrix:
+        php-version: ['8.1', '8.2', '8.3']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+
+      - run: composer install --no-progress
+        working-directory: php
+
+      - run: composer test
+        working-directory: php
+
+  test-java:
+    runs-on: ubuntu-latest
+    needs: generate-java
+
+    strategy:
+      matrix:
+        java-version: ['11', '17', '21']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: generated-java
+          path: java/src/main/java/com/mockeroo/mockresponses
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: temurin
+
+      - run: mvn test
+        working-directory: java
+
+  test-ruby:
+    runs-on: ubuntu-latest
+    needs: validate
+
+    strategy:
+      matrix:
+        ruby-version: ['3.1', '3.2', '3.3']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+
+      - run: ruby test/test_mockeroo_mock_responses.rb
+        working-directory: ruby
+
   release:
     runs-on: ubuntu-latest
-    needs: [test-go, test-js, test-rust, test-python]
+    needs: [test-go, test-js, test-rust, test-python, test-php, test-java, test-ruby]
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     permissions:
       contents: write
@@ -141,6 +226,12 @@ jobs:
       rust_tag_name: ${{ steps.release.outputs['rust--tag_name'] }}
       python_release_created: ${{ steps.release.outputs['python--release_created'] }}
       python_tag_name: ${{ steps.release.outputs['python--tag_name'] }}
+      php_release_created: ${{ steps.release.outputs['php--release_created'] }}
+      php_tag_name: ${{ steps.release.outputs['php--tag_name'] }}
+      java_release_created: ${{ steps.release.outputs['java--release_created'] }}
+      java_tag_name: ${{ steps.release.outputs['java--tag_name'] }}
+      ruby_release_created: ${{ steps.release.outputs['ruby--release_created'] }}
+      ruby_tag_name: ${{ steps.release.outputs['ruby--tag_name'] }}
     steps:
       - uses: googleapis/release-please-action@v4
         id: release
@@ -246,3 +337,63 @@ jobs:
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: python/dist/
+
+  # PHP / Packagist: no publish job needed — Packagist auto-indexes new tags
+  # via the GitHub webhook configured on the repository.
+
+  publish-maven:
+    runs-on: ubuntu-latest
+    needs: release
+    if: needs.release.outputs.java_release_created == 'true'
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release.outputs.java_tag_name }}
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: temurin
+          server-id: central
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - run: |
+          mkdir -p gen/out
+          javac gen/GenerateResponses.java -d gen/out
+          java -cp gen/out GenerateResponses
+        working-directory: java
+
+      - run: mvn --no-transfer-progress deploy -P release
+        working-directory: java
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+
+  publish-gem:
+    runs-on: ubuntu-latest
+    needs: release
+    if: needs.release.outputs.ruby_release_created == 'true'
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release.outputs.ruby_tag_name }}
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - run: |
+          cp -r responses ruby/responses
+          gem build mockeroo-mock-responses.gemspec
+          gem push mockeroo-mock-responses-*.gem
+        working-directory: ruby
+        env:
+          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}

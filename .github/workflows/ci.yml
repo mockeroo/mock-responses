@@ -326,11 +326,13 @@ jobs:
         with:
           ruby-version: '3.3'
 
+      - run: cp -r responses ruby/responses
+
       - name: Build and push gem
         run: |
-          cp -r responses ruby/responses
           gem build mockeroo-mock-responses.gemspec
-          gem push ruby/mockeroo-mock-responses-*.gem
+          gem push mockeroo-mock-responses-*.gem
+        working-directory: ruby
         env:
           GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
 

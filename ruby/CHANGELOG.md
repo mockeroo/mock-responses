@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/mockeroo/mock-responses/compare/mockeroo-mock-responses-v0.2.0...mockeroo-mock-responses/v0.3.0) (2026-02-22)
+
+
+### Features
+
+* **ruby:** add Ruby gem mockeroo-mock-responses ([#52](https://github.com/mockeroo/mock-responses/issues/52)) ([db538d2](https://github.com/mockeroo/mock-responses/commit/db538d2f894114eb5af549c192d372528edde189))
+
 ## [0.2.0](https://github.com/mockeroo/mock-responses/compare/mockeroo-mock-responses-v0.1.0...mockeroo-mock-responses/v0.2.0) (2026-02-22)
 
 

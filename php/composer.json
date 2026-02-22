@@ -3,8 +3,15 @@
   "description": "Sarcastic HTTP status code responses for testing and development.",
   "type": "library",
   "license": "MIT",
-  "version": "0.1.0",
-  "keywords": ["mock", "http", "status-codes", "humor", "api", "sarcastic"],
+  "version": "0.2.0",
+  "keywords": [
+    "mock",
+    "http",
+    "status-codes",
+    "humor",
+    "api",
+    "sarcastic"
+  ],
   "homepage": "https://github.com/mockeroo/mock-responses",
   "require": {
     "php": ">=8.2"

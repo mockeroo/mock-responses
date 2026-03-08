@@ -54,7 +54,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: generated-go
           path: go
@@ -243,7 +243,7 @@ jobs:
         with:
           ref: ${{ needs.release.outputs.go_tag_name }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: generated-go
           path: go
